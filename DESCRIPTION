@@ -1,0 +1,11 @@
+Package: incrementalpca
+Type: Package
+Title: Incrementally Fit and Update a PCA Decomposition
+Version: 0.1.0
+Authors@R: 
+    person("Mattias", "Jönsson", , "mattias.jonsson@stat.lu.se", role = c("aut", "cre"))
+Description: Basic, native R implementation of an incremental PCA algorithm. To a large extent a simplified port of Scikit Learn's IncrementalPCA implementation.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
