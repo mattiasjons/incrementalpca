@@ -92,20 +92,23 @@ IncrementalDecomposition <- R6Class("IncrementalDecomposition",
                            #'   - Calling the internal function `update_svd` to perform the singular value decomposition on the adjusted data.
                            #' @return None; updates the model's state in place.
                            partial_fit = function(X, lambda) {
-
+                             X <- X[!is.na(rowSums(X)),]
                              n_samples <- nrow(X)
                              n_features <- ncol(X)
+                             if(n_samples==0) {
+                               invisible(self)
+                             } else {
+                               updated_stats <- incremental_mean_and_var(X, self$mean_, self$var_, rep(self$n_samples_seen_, ncol(X)))
+                               col_mean = updated_stats[[1]]
+                               col_var = updated_stats[[2]]
+                               n_total_samples <- updated_stats[[3]][1]
 
-                             updated_stats <- incremental_mean_and_var(X, self$mean_, self$var_, rep(self$n_samples_seen_, ncol(X)))
-                             col_mean = updated_stats[[1]]
-                             col_var = updated_stats[[2]]
-                             n_total_samples <- updated_stats[[3]][1]
-
-                             col_batch_mean <- colMeans(X)
-                             X <- sweep(X, 2, col_batch_mean, "-")
-                             mean_correction <- sqrt((self$n_samples_seen_ / n_total_samples) * n_samples) * (self$mean_ - col_batch_mean)
-                             X <- rbind(lambda * self$singular_values_ * self$components_, X, mean_correction)
-                             private$update_svd(X, col_mean, col_var, n_features, n_total_samples)
+                               col_batch_mean <- colMeans(X)
+                               X <- sweep(X, 2, col_batch_mean, "-")
+                               mean_correction <- sqrt((self$n_samples_seen_ / n_total_samples) * n_samples) * (self$mean_ - col_batch_mean)
+                               X <- rbind(lambda * self$singular_values_ * self$components_, X, mean_correction)
+                               private$update_svd(X, col_mean, col_var, n_features, n_total_samples)
+                             }
                            },
 
                            #' @description Calculate the precision matrix of the model
